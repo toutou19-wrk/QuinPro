@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuinPro — Quincaillerie Professionnelle Tunisie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -22,10 +22,20 @@
   --radius:12px;--shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
   --shadow-lg:0 8px 32px rgba(0,0,0,.1);
   --font-body:'Outfit',sans-serif;
-  --font-display:'Syne',sans-serif;
+  --font-display:'Raleway',sans-serif;
   --font-num:'Inter',sans-serif;
 }
 html{scroll-behavior:smooth}
+
+/* ── GLOBAL NUMBER CLARITY — Inter font on all numeric elements ── */
+.stat-n,.hero-stat strong,.cart-total-row strong,
+.pprice,.pd-price,.pa-price,.citem-price,
+.summary-row strong, .succ-wrap .total-val,
+[class*="price"],[class*="-n"]{
+  font-family:'Inter',sans-serif !important;
+  font-feature-settings:'tnum' 1,'kern' 1;
+}
+
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 .page{display:none}.page.active{display:block}
 button,select,input,textarea{font-family:var(--font-body)}
@@ -39,7 +49,11 @@ img{display:block}
   box-shadow:0 2px 16px rgba(0,0,0,.3);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
-.logo{font-size:21px;font-weight:800;letter-spacing:-1.5px;white-space:nowrap;cursor:pointer;flex-shrink:0;font-family:var(--font-display)}
+.logo{
+  font-size:20px;font-weight:500;letter-spacing:3px;
+  white-space:nowrap;cursor:pointer;flex-shrink:0;
+  font-family:'Raleway',sans-serif;text-transform:uppercase;
+}
 .logo span{color:var(--brand)}
 .nav-search-wrap{flex:1;max-width:360px;position:relative}
 .nav-search{
@@ -98,11 +112,11 @@ img{display:block}
   backdrop-filter:blur(4px);
 }
 .hero-title{
-  font-size:32px;font-weight:800;color:white;
-  line-height:1.08;margin-bottom:12px;
-  font-family:var(--font-display);letter-spacing:-1px;
+  font-size:28px;font-weight:600;color:white;
+  line-height:1.2;margin-bottom:12px;
+  font-family:'Raleway',sans-serif;letter-spacing:1px;
 }
-.hero-title em{color:var(--brand);font-style:normal}
+.hero-title em{color:var(--brand);font-style:normal;font-weight:700;letter-spacing:2px}
 .hero-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;line-height:1.5}
 .hero-cta{
   background:var(--brand);color:white;border:none;
@@ -122,7 +136,7 @@ img{display:block}
 /* ── SECTIONS ── */
 .sec{padding:20px 20px}
 .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.sec-title{font-size:15px;font-weight:700;color:var(--text);font-family:var(--font-display);letter-spacing:-.3px}
+.sec-title{font-size:14px;font-weight:600;color:var(--text);font-family:'Raleway',sans-serif;letter-spacing:1px;text-transform:uppercase}
 .sec-line{flex:1;height:1px;background:var(--bdr);margin-left:12px}
 .view-all{font-size:12px;color:var(--brand);font-weight:600;cursor:pointer;background:none;border:none;padding:0}
 
@@ -207,7 +221,7 @@ img{display:block}
 .citem-img img{width:100%;height:100%;object-fit:cover}
 .citem-info{flex:1;min-width:0}
 .citem-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.citem-price{font-size:13px;font-weight:800;color:var(--brand)}
+.citem-price{font-size:13px;font-weight:800;color:var(--brand);font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1}
 .qrow{display:flex;gap:6px;align-items:center;margin-top:4px}
 .qbtn{
   width:22px;height:22px;border-radius:5px;
@@ -225,7 +239,7 @@ img{display:block}
 .cart-foot{padding:16px 20px;border-top:1px solid var(--bdr)}
 .cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .cart-total-row span{font-size:13px;color:var(--muted)}
-.cart-total-row strong{font-size:18px;font-weight:800;color:var(--text)}
+.cart-total-row strong{font-size:18px;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1}
 .cart-cta{
   width:100%;background:var(--brand);color:white;border:none;
   padding:14px;border-radius:12px;font-size:14px;font-weight:700;
@@ -252,7 +266,7 @@ img{display:block}
 }
 .lbtn.active{background:var(--brand);color:white;border-color:var(--brand)}
 .co-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
-.co-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:var(--font-display);letter-spacing:-.2px;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
+.co-card-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:'Raleway',sans-serif;letter-spacing:1.5px;text-transform:uppercase;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ffull{grid-column:1/-1}
 .fg{display:flex;flex-direction:column;gap:5px}
@@ -298,7 +312,7 @@ img{display:block}
   box-shadow:0 4px 20px rgba(0,0,0,.15);
 }
 .sa-banner i{font-size:22px;color:gold}
-.sa-banner strong{color:white;font-size:14px;display:block;font-family:var(--font-display);letter-spacing:-.2px}
+.sa-banner strong{color:white;font-size:13px;display:block;font-family:'Raleway',sans-serif;letter-spacing:2px;text-transform:uppercase;font-weight:600}
 .sa-banner p{color:rgba(255,255,255,.5);font-size:11px;margin-top:3px;letter-spacing:.2px}
 .atabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--bdr);padding-bottom:12px}
 .atab{
@@ -310,7 +324,7 @@ img{display:block}
 .atab.active{background:var(--steel);color:white;border-color:var(--steel);box-shadow:0 4px 12px rgba(17,24,39,.25)}
 .atab:hover:not(.active){border-color:var(--brand);color:var(--brand)}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:18px 14px;text-align:center;box-shadow:var(--shadow);transition:transform .18s}
+.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:18px 14px;text-align:center;box-shadow:var(--shadow);transition:transform .18s;font-family:'Inter',sans-serif}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .stat-n{font-size:24px;font-weight:800;color:var(--brand);font-family:'Inter',sans-serif;letter-spacing:-1px;line-height:1;font-feature-settings:'tnum' 1}
 .stat-l{font-size:9px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
@@ -318,7 +332,7 @@ img{display:block}
 /* ── ORDERS TABLE ── */
 .tbl-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
 .tbl-hdr{display:grid;grid-template-columns:60px 1fr 90px 90px;gap:8px;padding:11px 16px;background:var(--bg);font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--bdr)}
-.tbl-row{display:grid;grid-template-columns:60px 1fr 90px 90px;gap:8px;padding:13px 16px;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--text);align-items:start;transition:background .12s}
+.tbl-row{display:grid;grid-template-columns:60px 1fr 90px 90px;gap:8px;padding:13px 16px;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--text);align-items:start;transition:background .12s;font-variant-numeric:tabular-nums}
 .tbl-row:last-child{border:none}
 .tbl-row:hover{background:var(--bg)}
 .sbadge{padding:3px 9px;border-radius:20px;font-size:9px;font-weight:700;text-align:center;display:inline-block}
@@ -330,7 +344,7 @@ img{display:block}
 
 /* ── ADMIN PRODUCT FORM ── */
 .apform{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
-.apform-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:var(--font-display);letter-spacing:-.2px;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
+.apform-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:'Raleway',sans-serif;letter-spacing:1px;text-transform:uppercase;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
 .frow2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .savebtn{background:var(--brand);color:white;border:none;padding:11px 24px;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;letter-spacing:.3px;box-shadow:0 2px 12px rgba(232,93,4,.3)}
 .savebtn:hover{background:var(--brand-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(232,93,4,.4)}
@@ -467,7 +481,7 @@ img{display:block}
 .pd-desc{font-size:13px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:10px;padding:14px;margin-bottom:20px;border:1px solid var(--bdr)}
 .pd-desc.empty{color:var(--muted);font-style:italic}
 .pd-order-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
-.pd-order-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:var(--font-display);letter-spacing:-.2px;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
+.pd-order-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-family:'Raleway',sans-serif;letter-spacing:1.5px;text-transform:uppercase;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
 .pd-ltog{display:flex;gap:4px;margin-left:auto}
 .pd-order-btn{
   width:100%;background:var(--brand);color:white;border:none;
@@ -662,9 +676,9 @@ img{display:block}
       <i class="ti ti-arrow-down"></i> Voir les produits
     </button>
     <div class="hero-stats">
-      <div class="hero-stat"><strong id="hs-products">12</strong><span>Produits</span></div>
-      <div class="hero-stat"><strong>24h</strong><span>Livraison</span></div>
-      <div class="hero-stat"><strong>100%</strong><span>Authentique</span></div>
+      <div class="hero-stat"><strong id="hs-products" style="font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1">12</strong><span>Produits</span></div>
+      <div class="hero-stat"><strong style="font-family:'Inter',sans-serif">24h</strong><span>Livraison</span></div>
+      <div class="hero-stat"><strong style="font-family:'Inter',sans-serif">100%</strong><span>Authentique</span></div>
     </div>
   </div>
 
@@ -698,7 +712,7 @@ img{display:block}
   <div class="cart-foot">
     <div class="cart-total-row">
       <span>Total à payer</span>
-      <strong id="cartTotal">0 TND</strong>
+      <strong id="cartTotal" style="font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1">0 TND</strong>
     </div>
     <button class="cart-cta" id="cartCtaBtn" onclick="goCheckout()">
       <i class="ti ti-credit-card"></i> Commander maintenant
@@ -1249,7 +1263,7 @@ function buildOrderSummary() {
     `<div class="co-card-title"><i class="ti ti-receipt"></i> Récapitulatif</div>` +
     cart.map(i => `<div class="summary-row"><span>${i.emoji} ${escHtml(i.name)} × ${i.qty}</span><span><strong>${i.price*i.qty} TND</strong></span></div>`).join('') +
     `<div class="summary-row"><span>Livraison</span><span>${cart.length&&products.length?((products.find(x=>cart[0]&&x.id===cart[0].id)||{}).delivery_price||0)>0?(products.find(x=>cart[0]&&x.id===cart[0].id)||{}).delivery_price+' TND':'Gratuite':'Gratuite'}</span></div>
-     <div class="summary-row"><span>TOTAL</span><span><strong style="font-size:16px;color:var(--brand)">${total} TND</strong></span></div>`;
+     <div class="summary-row"><span>TOTAL</span><span><strong style="font-size:16px;color:var(--brand);font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1">${total} TND</strong></span></div>`;
 }
 
 const CO_LABELS = {
@@ -1332,7 +1346,7 @@ function buildSuccessPage(order) {
        <span>📍 ${escHtml(order.adr)}</span>
        ${order.note?`<span>📝 ${escHtml(order.note)}</span>`:''}
        <span style="margin-top:6px">🛒 ${order.items.map(i=>escHtml(i.name)+(i.qty>1?' ×'+i.qty:'')).join(', ')}</span>
-       <span style="font-weight:800;color:var(--brand);font-size:14px;margin-top:4px">Total: ${order.total} TND</span>
+       <span style="font-weight:800;color:var(--brand);font-size:14px;margin-top:4px;font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1">Total: ${order.total} TND</span>
      </div>`;
 }
 
@@ -1550,10 +1564,10 @@ async function renderAdminTab(tab) {
     const inprog=orders.filter(o=>o.status==='Confirmée').length;
     c.innerHTML=`
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-n">${orders.length}</div><div class="stat-l">Total commandes</div></div>
-        <div class="stat-card"><div class="stat-n">${total} TND</div><div class="stat-l">Revenus</div></div>
-        <div class="stat-card"><div class="stat-n">${pending}</div><div class="stat-l">En Attente</div></div>
-        <div class="stat-card"><div class="stat-n">${inprog}</div><div class="stat-l">Confirmées</div></div>
+        <div class="stat-card"><div class="stat-n" style="font-family:'Inter',sans-serif">${orders.length}</div><div class="stat-l">Total commandes</div></div>
+        <div class="stat-card"><div class="stat-n" style="font-family:'Inter',sans-serif">${total} TND</div><div class="stat-l">Revenus</div></div>
+        <div class="stat-card"><div class="stat-n" style="font-family:'Inter',sans-serif">${pending}</div><div class="stat-l">En Attente</div></div>
+        <div class="stat-card"><div class="stat-n" style="font-family:'Inter',sans-serif">${inprog}</div><div class="stat-l">Confirmées</div></div>
       </div>
       <div class="tbl-wrap">
         <div class="tbl-hdr"><span>#</span><span>Client / Produits</span><span class="hide-sm">Total</span><span>Statut</span></div>
@@ -1665,7 +1679,7 @@ function renderStatsTab(isSA, c) {
   const recent5=orders.slice(0,5);
   c.innerHTML=`
     <div class="stats-grid">
-      <div class="stat-card"><div style="font-size:20px;margin-bottom:6px">📦</div><div class="stat-n">${orders.length}</div><div class="stat-l">Total commandes</div></div>
+      <div class="stat-card"><div style="font-size:20px;margin-bottom:6px">📦</div><div class="stat-n" style="font-family:'Inter',sans-serif">${orders.length}</div><div class="stat-l">Total commandes</div></div>
       <div class="stat-card"><div style="font-size:20px;margin-bottom:6px">💰</div><div class="stat-n">${rev}</div><div class="stat-l">TND Revenus</div></div>
       <div class="stat-card"><div style="font-size:20px;margin-bottom:6px">📊</div><div class="stat-n">${avg}</div><div class="stat-l">TND Panier moyen</div></div>
       <div class="stat-card"><div style="font-size:20px;margin-bottom:6px">🏪</div><div class="stat-n">${products.length}</div><div class="stat-l">Produits actifs</div></div>
@@ -1722,7 +1736,7 @@ function renderStatsTab(isSA, c) {
             <div style="font-size:10px;color:var(--brand);font-weight:600;margin-top:2px">🛒 ${(o.items||[]).map(i=>escHtml(i.name)+(i.qty>1?' ×'+i.qty:'')).join(', ')}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:13px;font-weight:800;color:var(--brand)">${o.total} TND</div>
+            <div style="font-size:13px;font-weight:800;color:var(--brand);font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1">${o.total} TND</div>
             <span style="font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700;background:${statusBg[o.status]||'var(--bg)'};color:${statusColor[o.status]||'var(--muted)'}">${o.status}</span>
           </div>
         </div>`).join(''):`<div style="padding:20px;text-align:center;font-size:12px;color:var(--muted)"><i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px;opacity:.3"></i>Aucune commande</div>`}
@@ -1785,7 +1799,7 @@ function renderAdminProductList() {
         <div class="pa-meta">
           <strong>${escHtml(p.name)}</strong>
           <span><span class="stock-dot ${p.stock?'stock-in':'stock-out'}"></span>${escHtml(p.brand)} · ${p.stock?'En stock':'Rupture'}</span>
-          <div class="pa-price">${p.price} TND</div>
+          <div class="pa-price" style="font-family:'Inter',sans-serif;font-feature-settings:'tnum' 1">${p.price} TND</div>
         </div>
         ${p.badge?`<span style="background:var(--brand);color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0">${escHtml(p.badge)}</span>`:''}
       </div>
