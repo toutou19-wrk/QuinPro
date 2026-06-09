@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuinPro — Quincaillerie Professionnelle Tunisie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -23,6 +23,7 @@
   --shadow-lg:0 8px 32px rgba(0,0,0,.1);
   --font-body:'Outfit',sans-serif;
   --font-display:'Syne',sans-serif;
+  --font-num:'Inter',sans-serif;
 }
 html{scroll-behavior:smooth}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -115,7 +116,7 @@ img{display:block}
   border-top:1px solid rgba(255,255,255,.1);padding-top:20px;
 }
 .hero-stat{text-align:center}
-.hero-stat strong{display:block;font-size:20px;font-weight:800;color:var(--brand);font-family:var(--font-display);letter-spacing:-0.5px}
+.hero-stat strong{display:block;font-size:20px;font-weight:800;color:var(--brand);font-family:'Inter',sans-serif;letter-spacing:-0.5px;font-feature-settings:'tnum' 1}
 .hero-stat span{font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-top:2px;display:block}
 
 /* ── SECTIONS ── */
@@ -158,9 +159,9 @@ img{display:block}
 .pout{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
 .pout span{color:white;font-size:11px;font-weight:700;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:4px}
 .pinfo{padding:10px;flex:1;display:flex;flex-direction:column;gap:2px}
-.pname{font-size:12px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.1px}
-.pbrand{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.3px;text-transform:uppercase}
-.pprice{font-size:17px;font-weight:800;color:var(--brand);margin-top:auto;padding-top:6px;font-family:'Outfit',sans-serif;letter-spacing:-0.5px;font-style:normal;display:flex;align-items:baseline;gap:6px}
+.pname{font-size:12px;font-weight:600;color:var(--text);line-height:1.4;letter-spacing:0px;text-transform:capitalize;font-family:'Outfit',sans-serif}
+.pbrand{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:1.5px;text-transform:uppercase;font-family:'Outfit',sans-serif}
+.pprice{font-size:17px;font-weight:800;color:var(--brand);margin-top:auto;padding-top:6px;font-family:'Inter',sans-serif;letter-spacing:-0.5px;font-style:normal;display:flex;align-items:baseline;gap:6px;font-feature-settings:'tnum' 1}
 .pprice-sep{width:1.5px;height:14px;background:var(--brand);opacity:.35;border-radius:2px;align-self:center;display:inline-block}
 .pprice span{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1px}
 .addbtn{
@@ -311,7 +312,7 @@ img{display:block}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
 .stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:18px 14px;text-align:center;box-shadow:var(--shadow);transition:transform .18s}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.stat-n{font-size:24px;font-weight:800;color:var(--brand);font-family:var(--font-display);letter-spacing:-1px;line-height:1}
+.stat-n{font-size:24px;font-weight:800;color:var(--brand);font-family:'Inter',sans-serif;letter-spacing:-1px;line-height:1;font-feature-settings:'tnum' 1}
 .stat-l{font-size:9px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
 
 /* ── ORDERS TABLE ── */
@@ -440,16 +441,28 @@ img{display:block}
 .pd-badge{background:var(--brand);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase}
 .pd-stock-in{background:var(--green-bg);color:var(--green);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
 .pd-stock-out{background:var(--red-bg);color:var(--red);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
-.pd-name{font-size:24px;font-weight:800;color:var(--text);line-height:1.15;margin-bottom:5px;font-family:var(--font-display);letter-spacing:-1px}
-.pd-brand{font-size:11px;color:var(--muted);margin-bottom:14px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+.pd-name{
+  font-size:20px;font-weight:700;color:var(--text);
+  line-height:1.4;margin-bottom:6px;
+  font-family:'Outfit',sans-serif;
+  letter-spacing:0px;
+  text-transform:capitalize;
+  word-break:break-word;
+}
+.pd-brand{font-size:11px;color:var(--muted);margin-bottom:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:6px}.pd-brand::before{content:'—';opacity:.35}
 .pd-price{
   font-size:36px;font-weight:800;color:var(--brand);margin-bottom:18px;
-  font-family:'Outfit',sans-serif;letter-spacing:-1px;font-style:normal;
+  font-family:'Inter',sans-serif;letter-spacing:-1px;font-style:normal;
   display:flex;align-items:baseline;gap:10px;
+  font-feature-settings:'tnum' 1,'cv01' 1;
 }
-.pd-price .price-num{font-size:40px;font-weight:800;letter-spacing:-2px;line-height:1}
-.pd-price .price-sep{width:2px;height:32px;background:var(--brand);opacity:.4;border-radius:2px;align-self:center}
-.pd-price .price-cur{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.pd-price .price-num{
+  font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1;
+  font-family:'Inter',sans-serif;
+  font-feature-settings:'tnum' 1;
+}
+.pd-price .price-sep{width:2px;height:30px;background:var(--brand);opacity:.35;border-radius:2px;align-self:center}
+.pd-price .price-cur{font-size:14px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-family:'Outfit',sans-serif}
 .pd-price span{font-size:14px;font-weight:500;color:var(--muted)}
 .pd-desc{font-size:13px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:10px;padding:14px;margin-bottom:20px;border:1px solid var(--bdr)}
 .pd-desc.empty{color:var(--muted);font-style:italic}
