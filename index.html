@@ -160,8 +160,9 @@ img{display:block}
 .pinfo{padding:10px;flex:1;display:flex;flex-direction:column;gap:2px}
 .pname{font-size:12px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.1px}
 .pbrand{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.3px;text-transform:uppercase}
-.pprice{font-size:16px;font-weight:800;color:var(--brand);margin-top:auto;padding-top:6px;font-family:var(--font-display);letter-spacing:-.5px}
-.pprice span{font-size:10px;font-weight:500;color:var(--muted)}
+.pprice{font-size:17px;font-weight:800;color:var(--brand);margin-top:auto;padding-top:6px;font-family:'Outfit',sans-serif;letter-spacing:-0.5px;font-style:normal;display:flex;align-items:baseline;gap:6px}
+.pprice-sep{width:1.5px;height:14px;background:var(--brand);opacity:.35;border-radius:2px;align-self:center;display:inline-block}
+.pprice span{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1px}
 .addbtn{
   width:100%;margin-top:8px;background:var(--steel);color:white;border:none;
   border-radius:8px;padding:9px;font-size:11px;font-weight:600;cursor:pointer;
@@ -441,7 +442,14 @@ img{display:block}
 .pd-stock-out{background:var(--red-bg);color:var(--red);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
 .pd-name{font-size:24px;font-weight:800;color:var(--text);line-height:1.15;margin-bottom:5px;font-family:var(--font-display);letter-spacing:-1px}
 .pd-brand{font-size:11px;color:var(--muted);margin-bottom:14px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
-.pd-price{font-size:30px;font-weight:800;color:var(--brand);margin-bottom:18px;font-family:var(--font-display);letter-spacing:-1.5px}
+.pd-price{
+  font-size:36px;font-weight:800;color:var(--brand);margin-bottom:18px;
+  font-family:'Outfit',sans-serif;letter-spacing:-1px;font-style:normal;
+  display:flex;align-items:baseline;gap:10px;
+}
+.pd-price .price-num{font-size:40px;font-weight:800;letter-spacing:-2px;line-height:1}
+.pd-price .price-sep{width:2px;height:32px;background:var(--brand);opacity:.4;border-radius:2px;align-self:center}
+.pd-price .price-cur{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
 .pd-price span{font-size:14px;font-weight:500;color:var(--muted)}
 .pd-desc{font-size:13px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:10px;padding:14px;margin-bottom:20px;border:1px solid var(--bdr)}
 .pd-desc.empty{color:var(--muted);font-style:italic}
@@ -578,6 +586,9 @@ img{display:block}
     </div>
     <div class="mrow">
       <div class="fg"><label class="flbl">Prix (TND)</label><input class="finput" type="number" id="m_price" min="1" step="0.5"></div>
+      <div class="fg"><label class="flbl">Prix livraison (TND)</label><input class="finput" type="number" id="m_delivery" placeholder="7" min="0" step="0.5"></div>
+    </div>
+    <div class="mrow">
       <div class="fg"><label class="flbl">Catégorie</label>
         <select class="finput" id="m_cat">
           <option value="ventilation">Ventilation / Souffleurs</option>
@@ -690,7 +701,7 @@ img{display:block}
       <span class="co-title">Finaliser la commande</span>
       <div class="ltog">
         <button class="lbtn active" id="btnFR" onclick="setLang('fr')">FR</button>
-        <button class="lbtn" id="btnAR" onclick="setLang('ar')">عر</button>
+        <button class="lbtn" id="btnAR" onclick="setLang('ar')">عربي</button>
       </div>
     </div>
 
@@ -761,7 +772,7 @@ img{display:block}
       <button class="bbtn" id="pdBackBtn" onclick="goHome()"><i class="ti ti-arrow-left"></i> Retour</button>
       <div class="pd-ltog">
         <button class="lbtn active" id="pdBtnFR" onclick="setPdLang('fr')">FR</button>
-        <button class="lbtn" id="pdBtnAR" onclick="setPdLang('ar')">عر</button>
+        <button class="lbtn" id="pdBtnAR" onclick="setPdLang('ar')">عربي</button>
       </div>
     </div>
 
@@ -771,6 +782,7 @@ img{display:block}
     <div class="pd-name" id="pdName"></div>
     <div class="pd-brand" id="pdBrand"></div>
     <div class="pd-price" id="pdPrice"></div>
+    <div id="pdDelivery" style="display:none;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:14px;background:var(--bg);padding:9px 14px;border-radius:8px;border:1px solid var(--bdr)"></div>
 
     <div class="pd-desc" id="pdDesc"></div>
 
@@ -1214,7 +1226,7 @@ function goCheckout() {
   if (!cart.length) { toast('Votre panier est vide', 'err'); return; }
   closeCartPanel();
   buildOrderSummary();
-  setCheckoutLang('fr');
+  setCheckoutLang('ar');
   showPage('pg-checkout');
 }
 
@@ -1223,7 +1235,7 @@ function buildOrderSummary() {
   $('ordSummaryCard').innerHTML =
     `<div class="co-card-title"><i class="ti ti-receipt"></i> Récapitulatif</div>` +
     cart.map(i => `<div class="summary-row"><span>${i.emoji} ${escHtml(i.name)} × ${i.qty}</span><span><strong>${i.price*i.qty} TND</strong></span></div>`).join('') +
-    `<div class="summary-row"><span>Livraison</span><span>Gratuite</span></div>
+    `<div class="summary-row"><span>Livraison</span><span>${cart.length&&products.length?((products.find(x=>cart[0]&&x.id===cart[0].id)||{}).delivery_price||0)>0?(products.find(x=>cart[0]&&x.id===cart[0].id)||{}).delivery_price+' TND':'Gratuite':'Gratuite'}</span></div>
      <div class="summary-row"><span>TOTAL</span><span><strong style="font-size:16px;color:var(--brand)">${total} TND</strong></span></div>`;
 }
 
@@ -1274,7 +1286,7 @@ async function submitOrder() {
     adr:     val('fAdr'), note:   val('fNote'),
     items:   cart.map(i=>({id:i.id,name:i.name,price:i.price,emoji:i.emoji,qty:i.qty})),
     total:   cart.reduce((s,i)=>s+i.price*i.qty, 0),
-    status:  'Nouveau'
+    status:  'En Attente'
   };
 
   try {
@@ -1332,7 +1344,7 @@ const PD_LABELS = {
 function openProductDetail(id) {
   const p=products.find(x=>x.id===id);
   if(!p){toast('Produit introuvable','err');return;}
-  currentProductId=id; pdLang='fr';
+  currentProductId=id; pdLang='ar';
   $('pdImgBox').innerHTML = p.img_url
     ? `<img src="${escHtml(p.img_url)}" alt="${escHtml(p.name)}">`
     : `<div class="pd-fallback">${p.emoji}</div>`;
@@ -1340,7 +1352,18 @@ function openProductDetail(id) {
   bw.innerHTML=(p.badge?`<span class="pd-badge">${escHtml(p.badge)}</span>`:'')+
     (p.stock?`<span class="pd-stock-in">✓ En stock</span>`:`<span class="pd-stock-out">✗ Rupture</span>`);
   $('pdName').textContent=p.name; $('pdBrand').textContent=p.brand;
-  $('pdPrice').innerHTML=`${p.price} <span>TND</span>`;
+  $('pdPrice').innerHTML=`<span class="price-num">${p.price}</span><span class="price-sep"></span><span class="price-cur">TND</span>`;
+  // Delivery price display
+  const dlvEl=document.getElementById('pdDelivery');
+  if(dlvEl){
+    if(p.delivery_price&&p.delivery_price>0){
+      dlvEl.innerHTML=`<i class="ti ti-truck"></i> Livraison : <strong>${p.delivery_price} TND</strong>`;
+      dlvEl.style.display='flex';
+    } else {
+      dlvEl.innerHTML=`<i class="ti ti-truck"></i> Livraison : <strong>Gratuite</strong>`;
+      dlvEl.style.display='flex';
+    }
+  }
   const descEl=$('pdDesc');
   if(p.description&&p.description.trim()){descEl.textContent=p.description;descEl.classList.remove('empty');}
   else{descEl.textContent=PD_LABELS.fr.noDesc;descEl.classList.add('empty');}
@@ -1352,7 +1375,7 @@ function openProductDetail(id) {
   ['pdENom','pdETel','pdEWa','pdEAdr'].forEach(id=>$(id).style.display='none');
   $('pdOrdBtn').disabled=false; $('pdOrdBtnTxt').textContent=PD_LABELS.fr.btnOrder;
   $('pdBtnFR').classList.add('active'); $('pdBtnAR').classList.remove('active');
-  applyPdLabels('fr');
+  applyPdLabels('ar');
   showPage('pg-product');
 }
 
@@ -1421,7 +1444,7 @@ async function submitProductOrder() {
     tel:    val('pdTel'), wa:     val('pdWa'),
     adr:    val('pdAdr'), note:   '',
     items:  [{id:p.id,name:p.name,price:p.price,emoji:p.emoji,qty:1}],
-    total:  p.price, status:'Nouveau'
+    total:  p.price, status:'En Attente'
   };
 
   try {
@@ -1510,14 +1533,14 @@ async function renderAdminTab(tab) {
       orders = await SB.get('orders','select=*&order=created_at.desc');
     } catch(e) { orders=[]; }
     const total=orders.reduce((s,o)=>s+o.total,0);
-    const pending=orders.filter(o=>o.status==='Nouveau').length;
-    const inprog=orders.filter(o=>o.status==='En cours').length;
+    const pending=orders.filter(o=>o.status==='En Attente').length;
+    const inprog=orders.filter(o=>o.status==='Confirmée').length;
     c.innerHTML=`
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-n">${orders.length}</div><div class="stat-l">Total commandes</div></div>
         <div class="stat-card"><div class="stat-n">${total} TND</div><div class="stat-l">Revenus</div></div>
-        <div class="stat-card"><div class="stat-n">${pending}</div><div class="stat-l">Nouvelles</div></div>
-        <div class="stat-card"><div class="stat-n">${inprog}</div><div class="stat-l">En cours</div></div>
+        <div class="stat-card"><div class="stat-n">${pending}</div><div class="stat-l">En Attente</div></div>
+        <div class="stat-card"><div class="stat-n">${inprog}</div><div class="stat-l">Confirmées</div></div>
       </div>
       <div class="tbl-wrap">
         <div class="tbl-hdr"><span>#</span><span>Client / Produits</span><span class="hide-sm">Total</span><span>Statut</span></div>
@@ -1537,7 +1560,7 @@ async function renderAdminTab(tab) {
             <span class="hide-sm" style="font-weight:800;color:var(--brand)">${o.total} TND</span>
             <span>
               <select class="status-sel" onchange="updateOrderStatus('${o.id}',this.value)">
-                ${['Nouveau','En cours','Livré'].map(s=>`<option${s===o.status?' selected':''}>${s}</option>`).join('')}
+                ${['Confirmée','En Attente','Rejetée'].map(s=>`<option${s===o.status?' selected':''}>${s}</option>`).join('')}
               </select>
             </span>
           </div>`).join('')
@@ -1561,6 +1584,9 @@ async function renderAdminTab(tab) {
         </div>
         <div class="frow2">
           <div class="fg"><label class="flbl">Prix (TND) *</label><input class="finput" type="number" id="np_price" placeholder="250" min="0.5" step="0.5"></div>
+          <div class="fg"><label class="flbl">Prix livraison (TND)</label><input class="finput" type="number" id="np_delivery" placeholder="7" min="0" step="0.5" value="7"></div>
+        </div>
+        <div class="frow2">
           <div class="fg"><label class="flbl">Catégorie</label>
             <select class="finput" id="np_cat">
               <option value="ventilation">Ventilation</option><option value="nettoyage">Nettoyage</option>
@@ -1608,7 +1634,7 @@ async function updateOrderStatus(id, status) {
 function renderStatsTab(isSA, c) {
   const rev=orders.reduce((s,o)=>s+o.total,0);
   const avg=orders.length?Math.round(rev/orders.length):0;
-  const sCounts={'Nouveau':0,'En cours':0,'Livré':0};
+  const sCounts={'Confirmée':0,'En Attente':0,'Rejetée':0};
   orders.forEach(o=>{if(sCounts[o.status]!==undefined)sCounts[o.status]++;});
   const prodSales={},prodRev={};
   orders.forEach(o=>(o.items||[]).forEach(i=>{
@@ -1620,8 +1646,8 @@ function renderStatsTab(isSA, c) {
   const maxSale=topProds.length?topProds[0][1]:1, maxRev=topRev.length?topRev[0][1]:1;
   const catBreakdown=CATS.filter(x=>x.id!=='all').map(cat=>({label:cat.label,icon:cat.icon,count:products.filter(p=>p.cat===cat.id).length})).sort((a,b)=>b.count-a.count);
   const maxCat=Math.max(...catBreakdown.map(x=>x.count),1);
-  const statusColor={'Nouveau':'var(--yellow)','En cours':'var(--blue)','Livré':'var(--green)'};
-  const statusBg={'Nouveau':'var(--yellow-bg)','En cours':'var(--blue-bg)','Livré':'var(--green-bg)'};
+  const statusColor={'Confirmée':'var(--green)','En Attente':'var(--yellow)','Rejetée':'var(--red)'};
+  const statusBg={'Confirmée':'var(--green-bg)','En Attente':'var(--yellow-bg)','Rejetée':'var(--red-bg)'};
   const medals=['#FFD700','#C0C0C0','#CD7F32'];
   const recent5=orders.slice(0,5);
   c.innerHTML=`
@@ -1724,7 +1750,7 @@ async function addProduct() {
       const path='products/prod_'+genId();
       img_url = await SB.uploadImage('product-images', path, newProdImg);
     }
-    const p={name,brand,price,cat:$('np_cat').value,emoji:val('np_emoji')||'🔧',badge:val('np_badge'),description:$('np_desc').value.trim(),img_url,stock:true};
+    const p={name,brand,price,delivery_price:parseFloat($('np_delivery').value)||0,cat:$('np_cat').value,emoji:val('np_emoji')||'🔧',badge:val('np_badge'),description:$('np_desc').value.trim(),img_url,stock:true};
     const created=await SB.post('products',p);
     products.push(created[0]||{...p,id:Date.now()});
     ['np_name','np_brand','np_price','np_badge','np_desc'].forEach(id=>setVal(id,''));
@@ -1781,7 +1807,7 @@ function openEditModal(id) {
   const p=products.find(x=>x.id===id);if(!p){toast('Produit introuvable','err');return;}
   editingId=id;editImgData=p.img_url||'';
   setVal('m_name',p.name);setVal('m_brand',p.brand);setVal('m_price',p.price);
-  setVal('m_emoji',p.emoji);setVal('m_badge',p.badge||'');setVal('m_desc',p.description||'');
+  setVal('m_emoji',p.emoji);setVal('m_badge',p.badge||'');setVal('m_desc',p.description||'');setVal('m_delivery',p.delivery_price||7);
   $('m_cat').value=p.cat;$('m_stock').value=p.stock?'1':'0';
   $('editImgFile').value='';
   const imgEl=$('editImgPreview'),tipEl=$('editImgTip'),clrBtn=$('editImgClearBtn');
@@ -1816,7 +1842,7 @@ async function saveEditModal() {
     } else if(!editImgData) {
       img_url=''; // image cleared
     }
-    const updates={name,brand:val('m_brand')||'—',price,cat:$('m_cat').value,emoji:val('m_emoji')||'🔧',badge:val('m_badge'),stock:parseInt($('m_stock').value)===1,description:$('m_desc').value.trim(),img_url};
+    const updates={name,brand:val('m_brand')||'—',price,delivery_price:parseFloat($('m_delivery').value)||0,cat:$('m_cat').value,emoji:val('m_emoji')||'🔧',badge:val('m_badge'),stock:parseInt($('m_stock').value)===1,description:$('m_desc').value.trim(),img_url};
     await SB.patch('products',`id=eq.${editingId}`,updates);
     Object.assign(p,updates);
     // Sync cart
