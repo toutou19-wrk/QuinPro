@@ -1409,7 +1409,8 @@ function openProductDetail(id) {
   applyPdLabels('ar');
   showPage('pg-product');
   // Set URL hash for sharing
-  history.pushState({page:'product',id:id}, '', '#produit-'+id);
+  const _slug = slugify(p.name);
+  history.pushState({page:'product',id:id}, '', '#'+_slug);
 }
 
 function applyPdLabels(l) {
@@ -1975,8 +1976,29 @@ async function deleteAdmin(id) {
 }
 
 /* ── Password management ── */
+function slugify(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[\s\+\&]+/g, '-')      // spaces, +, & → dash
+    .replace(/[àáâãäå]/g, 'a')
+    .replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõö]/g, 'o')
+    .replace(/[ùúûü]/g, 'u')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ñ]/g, 'n')
+    .replace(/[^a-z0-9\-]/g, '')     // remove all non-alphanumeric
+    .replace(/\-{2,}/g, '-')         // collapse multiple dashes
+    .replace(/^\-+|\-+$/g, '');      // trim leading/trailing dashes
+}
+
 function shareProduct() {
-  const url = window.location.origin + window.location.pathname + '#produit-' + currentProductId;
+  const p = products.find(x => x.id === currentProductId);
+  if (!p) return;
+  const slug = slugify(p.name);
+  const url = window.location.origin + window.location.pathname + '#' + slug;
   if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(() => {
       const btn = $('pdShareTxt');
@@ -1984,7 +2006,6 @@ function shareProduct() {
       toast('Lien copié — prêt à partager sur Facebook', 'ok');
     });
   } else {
-    // Fallback for older browsers
     const ta = document.createElement('textarea');
     ta.value = url; document.body.appendChild(ta);
     ta.select(); document.execCommand('copy');
@@ -2052,10 +2073,9 @@ document.addEventListener('keydown', e=>{
    HASH ROUTER — open product directly from URL
 ═══════════════════════════════════════════════ */
 async function handleHashRoute() {
-  const hash = window.location.hash; // e.g. #produit-42
-  if (!hash || !hash.startsWith('#produit-')) return;
-  const id = parseInt(hash.replace('#produit-', ''));
-  if (!id) return;
+  const hash = window.location.hash; // e.g. #secateur-tronconneuse-48v
+  if (!hash || hash.length < 2) return;
+  const slug = hash.replace('#', '');
   // Wait for products to load if not yet available
   if (!products.length) {
     await new Promise(resolve => {
@@ -2065,8 +2085,9 @@ async function handleHashRoute() {
       setTimeout(() => { clearInterval(check); resolve(); }, 5000);
     });
   }
-  const p = products.find(x => x.id === id);
-  if (p) openProductDetail(id);
+  // Find product by matching slug
+  const p = products.find(x => slugify(x.name) === slug);
+  if (p) openProductDetail(p.id);
 }
 
 // Handle browser back/forward buttons
