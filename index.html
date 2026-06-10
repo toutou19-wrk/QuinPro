@@ -797,6 +797,9 @@ img{display:block}
   <div class="pd-wrap">
     <div class="pd-topbar">
       <button class="bbtn" id="pdBackBtn" onclick="goHome()"><i class="ti ti-arrow-left"></i> Retour</button>
+      <button class="bbtn" id="pdShareBtn" onclick="shareProduct()" title="Copier le lien" style="gap:5px">
+        <i class="ti ti-share"></i> <span id="pdShareTxt">Partager</span>
+      </button>
       <div class="pd-ltog">
         <button class="lbtn active" id="pdBtnFR" onclick="setPdLang('fr')">FR</button>
         <button class="lbtn" id="pdBtnAR" onclick="setPdLang('ar')">عربي</button>
@@ -1087,6 +1090,7 @@ function goHome() {
   if (all) all.classList.add('active');
   renderProducts(products);
   showPage('pg-home');
+  history.pushState({page:'home'}, '', window.location.pathname);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1404,6 +1408,8 @@ function openProductDetail(id) {
   $('pdBtnFR').classList.add('active'); $('pdBtnAR').classList.remove('active');
   applyPdLabels('ar');
   showPage('pg-product');
+  // Set URL hash for sharing
+  history.pushState({page:'product',id:id}, '', '#produit-'+id);
 }
 
 function applyPdLabels(l) {
@@ -1969,6 +1975,24 @@ async function deleteAdmin(id) {
 }
 
 /* ── Password management ── */
+function shareProduct() {
+  const url = window.location.origin + window.location.pathname + '#produit-' + currentProductId;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = $('pdShareTxt');
+      if (btn) { btn.textContent = 'Lien copié !'; setTimeout(() => btn.textContent = 'Partager', 2000); }
+      toast('Lien copié — prêt à partager sur Facebook', 'ok');
+    });
+  } else {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Lien copié !', 'ok');
+  }
+}
+
 function togglePw(adminId) {
   const span=$('pwshow_'+adminId),btn=$('pwbtn_'+adminId);if(!span)return;
   const visible=span.getAttribute('data-visible')==='1', pw=span.getAttribute('data-pw');
@@ -2025,11 +2049,43 @@ document.addEventListener('keydown', e=>{
 });
 
 /* ═══════════════════════════════════════════════
+   HASH ROUTER — open product directly from URL
+═══════════════════════════════════════════════ */
+async function handleHashRoute() {
+  const hash = window.location.hash; // e.g. #produit-42
+  if (!hash || !hash.startsWith('#produit-')) return;
+  const id = parseInt(hash.replace('#produit-', ''));
+  if (!id) return;
+  // Wait for products to load if not yet available
+  if (!products.length) {
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (products.length) { clearInterval(check); resolve(); }
+      }, 100);
+      setTimeout(() => { clearInterval(check); resolve(); }, 5000);
+    });
+  }
+  const p = products.find(x => x.id === id);
+  if (p) openProductDetail(id);
+}
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', e => {
+  if (e.state && e.state.page === 'home') {
+    showPage('pg-home');
+  } else if (e.state && e.state.page === 'product') {
+    openProductDetail(e.state.id);
+  } else if (!window.location.hash) {
+    showPage('pg-home');
+  }
+});
+
+/* ═══════════════════════════════════════════════
    INIT — charge les produits depuis Supabase
 ═══════════════════════════════════════════════ */
 buildCats();
 updateCartBadge();
-loadProducts();  // charge depuis Supabase au démarrage
+loadProducts().then(() => handleHashRoute());
 </script>
 </body>
 </html>
