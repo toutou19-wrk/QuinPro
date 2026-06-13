@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="vercel-toolbar" content="false">
 <title>QuinPro — Quincaillerie Professionnelle Tunisie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
@@ -279,7 +278,7 @@ img{display:block}
 }
 .finput:focus{border-color:var(--brand);background:var(--card)}
 .finput.err{border-color:var(--red)}
-.errmsg{font-size:10px;color:var(--red);margin-top:2px;display:none}
+.errmsg{font-size:11px;color:var(--red);margin-top:5px;display:none;background:var(--red-bg);padding:7px 11px;border-radius:7px;border-left:3px solid var(--red);font-weight:600;line-height:1.5}
 .summary-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:12px;border-bottom:1px solid var(--bdr);color:var(--muted)}
 .summary-row:last-child{border:none;font-weight:800;color:var(--text);font-size:14px;padding-top:10px}
 .soc-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -1272,8 +1271,8 @@ function buildOrderSummary() {
 }
 
 const CO_LABELS = {
-  fr: { title:'Vos coordonnées', nom:'Nom', pre:'Prénom', tel:'Téléphone', adr:'Adresse de livraison', note:'Note (optionnel)', nph:'Ben Ali', pph:'Ahmed', aph:'Rue, Ville, Gouvernorat', eph:'Instructions...', errReq:'Ce champ est requis', errTel:'Format invalide (ex: +216 12 345 678)', btn:'Confirmer la commande', btnLoading:'Envoi en cours...' },
-  ar: { title:'بياناتك', nom:'اللقب', pre:'الاسم', tel:'رقم الهاتف', adr:'عنوان التسليم', note:'ملاحظة', nph:'بن علي', pph:'أحمد', aph:'الشارع، المدينة، الولاية', eph:'تعليمات...', errReq:'الحقل مطلوب', errTel:'صيغة غير صحيحة', btn:'تأكيد الطلب', btnLoading:'جاري الإرسال...' }
+  fr: { title:'Vos coordonnées', nom:'Nom', pre:'Prénom', tel:'Téléphone', adr:'Adresse de livraison', note:'Note (optionnel)', nph:'Ben Ali', pph:'Ahmed', aph:'Rue, Ville, Gouvernorat', eph:'Instructions...', errReq:'Ce champ est requis', errTel:'Format invalide (ex: +216 12 345 678)', errTel2:'⚠️ Numéro de téléphone obligatoire', btn:'Confirmer la commande', btnLoading:'Envoi en cours...' },
+  ar: { title:'بياناتك', nom:'اللقب', pre:'الاسم', tel:'رقم الهاتف', adr:'عنوان التسليم', note:'ملاحظة', nph:'بن علي', pph:'أحمد', aph:'الشارع، المدينة، الولاية', eph:'تعليمات...', errReq:'الحقل مطلوب', errTel:'صيغة غير صحيحة', errTel2:'⚠️ رقم الهاتف إلزامي', btn:'تأكيد الطلب', btnLoading:'جاري الإرسال...' }
 };
 
 function setLang(l) { checkoutLang = l; setCheckoutLang(l); }
@@ -1292,53 +1291,29 @@ function setCheckoutLang(l) {
 
 function validateCheckout() {
   const lb=CO_LABELS[checkoutLang]; let valid=true;
-  [['fNom','eNom'],['fTel','eTel'],['fAdr','eAdr']].forEach(([fid,eid])=>{
+  [['fNom','eNom'],['fAdr','eAdr']].forEach(([fid,eid])=>{
     const el=$(fid),err=$(eid);
-    if(!el.value.trim()){el.classList.add('err');err.textContent=lb.errReq;err.style.display='block';valid=false;}
-    else{el.classList.remove('err');err.style.display='none';}
+    if(el)el.classList.remove('err');
+    if(err)err.style.display='none';
   });
-  const telEl=$('fTel'),telErr=$('eTel');
-  if(telEl.value.trim()&&!/^[+\d\s\-()\u0660-\u0669]{7,20}$/.test(telEl.value.trim())){
-    telEl.classList.add('err');telErr.textContent=lb.errTel;telErr.style.display='block';valid=false;
+  const telEl=$('fTel'),telErr=$('eTel'),telVal=telEl.value.trim();
+  if(!telVal){
+    telEl.classList.add('err');
+    telErr.textContent=lb.errTel2;
+    telErr.style.display='block';
+    valid=false;
+  } else if(!/^[+0-9 ()\-]{7,20}$/.test(telVal)){
+    telEl.classList.add('err');
+    telErr.textContent=lb.errTel;
+    telErr.style.display='block';
+    valid=false;
+  } else {
+    telEl.classList.remove('err');
+    telErr.style.display='none';
   }
   return valid;
 }
 
-async function submitOrder() {
-  if (!validateCheckout()) return;
-  const lb=CO_LABELS[checkoutLang], btn=$('ordBtn');
-  btn.disabled=true;
-  btn.innerHTML=`<i class="ti ti-loader"></i> ${lb.btnLoading}`;
-
-  const order = {
-    id:      'CMD-' + genId(),
-    source:  'cart',
-    nom:     val('fNom'), prenom: val('fPre'),
-    tel:     val('fTel'), wa:     val('fTel'),
-    adr:     val('fAdr'), note:   val('fNote'),
-    items:   cart.map(i=>({id:i.id,name:i.name,price:i.price,emoji:i.emoji,qty:i.qty})),
-    total:   cart.reduce((s,i)=>s+i.price*i.qty, 0),
-    status:  'En Attente'
-  };
-
-  try {
-    await SB.post('orders', order);
-    lastOrder = order;
-    cart = []; saveCart(); updateCartBadge();
-    ['fNom','fPre','fTel','fAdr','fNote'].forEach(id=>setVal(id,''));
-    btn.disabled=false; setCheckoutLang(checkoutLang);
-    buildSuccessPage(order);
-    showPage('pg-success');
-  } catch(e) {
-    btn.disabled=false; setCheckoutLang(checkoutLang);
-    toast('Erreur lors de l\'envoi. Réessayez.', 'err');
-    console.error('submitOrder:', e);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   SUCCESS PAGE
-═══════════════════════════════════════════════ */
 function buildSuccessPage(order) {
   $('succOrderInfo').innerHTML =
     `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -1369,8 +1344,8 @@ function sendToWhatsApp() {
    PRODUCT DETAIL PAGE
 ═══════════════════════════════════════════════ */
 const PD_LABELS = {
-  fr:{formTitle:'Commander ce produit',nom:'Nom',pre:'Prénom',tel:'Téléphone',wa:'WhatsApp',adr:'Adresse de livraison',nph:'Ben Ali',pph:'Ahmed',tph:'+216 XX XXX XXX',aph:'Rue, Ville, Gouvernorat',btnCart:'Ajouter au panier aussi',btnCartAdded:'✓ Dans le panier',btnOrder:'Confirmer la commande',btnLoading:'Envoi...',socTitle:'Suivez-nous',socText:'Offres exclusives',stockIn:'En stock',stockOut:'Rupture',back:'Retour',noDesc:'Aucune description disponible.',errReq:'Ce champ est requis',errTel:'Format invalide'},
-  ar:{formTitle:'اطلب هذا المنتج',nom:'اللقب',pre:'الاسم',tel:'رقم الهاتف',wa:'واتساب',adr:'عنوان التسليم',nph:'بن علي',pph:'أحمد',tph:'+216 XX XXX XXX',aph:'الشارع، المدينة، الولاية',btnCart:'إضافة إلى السلة أيضاً',btnCartAdded:'✓ في السلة',btnOrder:'تأكيد الطلب',btnLoading:'جاري الإرسال...',socTitle:'تابعونا',socText:'عروض حصرية',stockIn:'متوفر',stockOut:'نفذ المخزون',back:'رجوع',noDesc:'لا يوجد وصف.',errReq:'الحقل مطلوب',errTel:'صيغة غير صحيحة'}
+  fr:{formTitle:'Commander ce produit',nom:'Nom',pre:'Prénom',tel:'Téléphone',wa:'WhatsApp',adr:'Adresse de livraison',nph:'Ben Ali',pph:'Ahmed',tph:'+216 XX XXX XXX',aph:'Rue, Ville, Gouvernorat',btnCart:'Ajouter au panier aussi',btnCartAdded:'✓ Dans le panier',btnOrder:'Confirmer la commande',btnLoading:'Envoi...',socTitle:'Suivez-nous',socText:'Offres exclusives',stockIn:'En stock',stockOut:'Rupture',back:'Retour',noDesc:'Aucune description disponible.',errReq:'Ce champ est requis',errTel:'Format invalide',errTel2:'⚠️ Numéro de téléphone obligatoire'},
+  ar:{formTitle:'اطلب هذا المنتج',nom:'اللقب',pre:'الاسم',tel:'رقم الهاتف',wa:'واتساب',adr:'عنوان التسليم',nph:'بن علي',pph:'أحمد',tph:'+216 XX XXX XXX',aph:'الشارع، المدينة، الولاية',btnCart:'إضافة إلى السلة أيضاً',btnCartAdded:'✓ في السلة',btnOrder:'تأكيد الطلب',btnLoading:'جاري الإرسال...',socTitle:'تابعونا',socText:'عروض حصرية',stockIn:'متوفر',stockOut:'نفذ المخزون',back:'رجوع',noDesc:'لا يوجد وصف.',errReq:'الحقل مطلوب',errTel:'صيغة غير صحيحة',errTel2:'⚠️ رقم الهاتف إلزامي'}
 };
 
 function openProductDetail(id) {
@@ -1452,53 +1427,37 @@ function pdAddToCart() {
 
 function validateProductForm() {
   const lb=PD_LABELS[pdLang]; let valid=true;
-  [['pdNom','pdENom'],['pdTel','pdETel'],['pdWa','pdEWa'],['pdAdr','pdEAdr']].forEach(([fid,eid])=>{
-    const el=$(fid),err=$(eid);
-    if(!el.value.trim()){el.classList.add('err');err.textContent=lb.errReq;err.style.display='block';valid=false;}
-    else{el.classList.remove('err');err.style.display='none';}
+  ['pdNom','pdENom','pdAdr','pdEAdr'].forEach(id=>{
+    const el=$(id); if(!el)return;
+    if(el.classList)el.classList.remove('err');
+    else el.style.display='none';
   });
-  ['pdTel','pdWa'].forEach((fid,i)=>{
-    const eid=['pdETel','pdEWa'][i],el=$(fid),err=$(eid);
-    if(el.value.trim()&&!/^[+\d\s\-()\u0660-\u0669]{7,20}$/.test(el.value.trim())){
-      el.classList.add('err');err.textContent=lb.errTel;err.style.display='block';valid=false;
-    }
-  });
+  const waEl=$('pdWa'),waErr=$('pdEWa');
+  waEl.classList.remove('err'); waErr.style.display='none';
+  const telEl=$('pdTel'),telErr=$('pdETel'),telVal=telEl.value.trim();
+  if(!telVal){
+    telEl.classList.add('err');
+    telErr.textContent=lb.errTel2||'⚠️ رقم الهاتف إلزامي / Numéro obligatoire';
+    telErr.style.display='block';
+    valid=false;
+  } else if(!/^[+0-9 ()\-]{7,20}$/.test(telVal)){
+    telEl.classList.add('err');
+    telErr.textContent=lb.errTel;
+    telErr.style.display='block';
+    valid=false;
+  } else {
+    telEl.classList.remove('err');
+    telErr.style.display='none';
+  }
+  if(waEl.value.trim()&&!/^[+0-9 ()\-]{7,20}$/.test(waEl.value.trim())){
+    waEl.classList.add('err');
+    waErr.textContent=lb.errTel;
+    waErr.style.display='block';
+    valid=false;
+  }
   return valid;
 }
 
-async function submitProductOrder() {
-  if(!validateProductForm())return;
-  const p=products.find(x=>x.id===currentProductId);
-  if(!p){toast('Produit introuvable','err');return;}
-  const lb=PD_LABELS[pdLang], btn=$('pdOrdBtn');
-  btn.disabled=true; $('pdOrdBtnTxt').textContent=lb.btnLoading;
-
-  const order = {
-    id:     'CMD-'+genId(), source:'detail',
-    nom:    val('pdNom'), prenom: val('pdPre'),
-    tel:    val('pdTel'), wa:     val('pdWa'),
-    adr:    val('pdAdr'), note:   '',
-    items:  [{id:p.id,name:p.name,price:p.price,emoji:p.emoji,qty:1}],
-    total:  p.price, status:'En Attente'
-  };
-
-  try {
-    await SB.post('orders', order);
-    lastOrder=order;
-    ['pdNom','pdPre','pdTel','pdWa','pdAdr'].forEach(id=>setVal(id,''));
-    btn.disabled=false; $('pdOrdBtnTxt').textContent=lb.btnOrder;
-    buildSuccessPage(order);
-    showPage('pg-success');
-  } catch(e) {
-    btn.disabled=false; $('pdOrdBtnTxt').textContent=lb.btnOrder;
-    toast('Erreur lors de l\'envoi. Réessayez.', 'err');
-    console.error('submitProductOrder:', e);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   ADMIN — Login
-═══════════════════════════════════════════════ */
 function showAdminLogin() {
   setVal('loginPwInput',''); $('loginErr').style.display='none';
   $('loginPwInput').type='password'; $('loginEyeIcon').className='ti ti-eye';
