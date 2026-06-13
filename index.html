@@ -1302,7 +1302,7 @@ function validateCheckout() {
     telErr.textContent=lb.errTel2;
     telErr.style.display='block';
     valid=false;
-  } else if(!/^[+0-9 ()\-]{7,20}$/.test(telVal)){
+  } else if(telVal.replace(/\D/g,'').length < 7){
     telEl.classList.add('err');
     telErr.textContent=lb.errTel;
     telErr.style.display='block';
@@ -1440,7 +1440,7 @@ function validateProductForm() {
     telErr.textContent=lb.errTel2||'⚠️ رقم الهاتف إلزامي / Numéro obligatoire';
     telErr.style.display='block';
     valid=false;
-  } else if(!/^[+0-9 ()\-]{7,20}$/.test(telVal)){
+  } else if(telVal.replace(/\D/g,'').length < 7){
     telEl.classList.add('err');
     telErr.textContent=lb.errTel;
     telErr.style.display='block';
@@ -1449,7 +1449,7 @@ function validateProductForm() {
     telEl.classList.remove('err');
     telErr.style.display='none';
   }
-  if(waEl.value.trim()&&!/^[+0-9 ()\-]{7,20}$/.test(waEl.value.trim())){
+  if(waEl.value.trim()&&waEl.value.trim().replace(/\D/g,'').length < 7){
     waEl.classList.add('err');
     waErr.textContent=lb.errTel;
     waErr.style.display='block';
