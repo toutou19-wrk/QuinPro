@@ -1314,6 +1314,68 @@ function validateCheckout() {
   return valid;
 }
 
+
+async function submitOrder() {
+  if (!validateCheckout()) return;
+  const lb=CO_LABELS[checkoutLang], btn=$('ordBtn');
+  btn.disabled=true;
+  btn.innerHTML=`<i class="ti ti-loader"></i> ${lb.btnLoading}`;
+  const order = {
+    id: 'CMD-'+genId(), source: 'cart',
+    nom: val('fNom'), prenom: val('fPre'),
+    tel: val('fTel'), wa: val('fTel'),
+    adr: val('fAdr'), note: val('fNote'),
+    items: cart.map(i=>({id:i.id,name:i.name,price:i.price,emoji:i.emoji,qty:i.qty})),
+    total: cart.reduce((s,i)=>s+i.price*i.qty, 0),
+    status: 'En Attente'
+  };
+  try {
+    await SB.post('orders', order);
+    lastOrder = order;
+    cart = []; saveCart(); updateCartBadge();
+    ['fNom','fPre','fTel','fAdr','fNote'].forEach(id=>setVal(id,''));
+    btn.disabled=false; setCheckoutLang(checkoutLang);
+    buildSuccessPage(order);
+    showPage('pg-success');
+  } catch(e) {
+    btn.disabled=false; setCheckoutLang(checkoutLang);
+    toast("Erreur lors de l'envoi. Réessayez.", 'err');
+    console.error('submitOrder:', e);
+  }
+}
+
+async function submitProductOrder() {
+  if (!validateProductForm()) return;
+  const p = products.find(x => x.id === currentProductId);
+  if (!p) { toast('Produit introuvable', 'err'); return; }
+  const lb=PD_LABELS[pdLang], btn=$('pdOrdBtn');
+  btn.disabled=true;
+  $('pdOrdBtnTxt').textContent=lb.btnLoading;
+  const order = {
+    id: 'CMD-'+genId(), source: 'detail',
+    nom: val('pdNom'), prenom: val('pdPre'),
+    tel: val('pdTel'), wa: val('pdWa')||val('pdTel'),
+    adr: val('pdAdr'), note: '',
+    items: [{id:p.id, name:p.name, price:p.price, emoji:p.emoji, qty:1}],
+    total: p.price,
+    status: 'En Attente'
+  };
+  try {
+    await SB.post('orders', order);
+    lastOrder = order;
+    ['pdNom','pdPre','pdTel','pdWa','pdAdr'].forEach(id=>setVal(id,''));
+    btn.disabled=false;
+    $('pdOrdBtnTxt').textContent=lb.btnOrder;
+    buildSuccessPage(order);
+    showPage('pg-success');
+  } catch(e) {
+    btn.disabled=false;
+    $('pdOrdBtnTxt').textContent=lb.btnOrder;
+    toast("Erreur lors de l'envoi. Réessayez.", 'err');
+    console.error('submitProductOrder:', e);
+  }
+}
+
 function buildSuccessPage(order) {
   $('succOrderInfo').innerHTML =
     `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
