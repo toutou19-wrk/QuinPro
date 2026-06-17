@@ -3,6 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1017945484081114');
+fbq('track', 'PageView');
+</script>
+<noscript>
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1017945484081114&ev=PageView&noscript=1"/>
+</noscript>
+<!-- End Facebook Pixel Code -->
 <title>QuinPro — Quincaillerie Professionnelle Tunisie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
@@ -517,6 +536,25 @@ img{display:block}
   .hero-title{font-size:22px}
 }
 </style>
+
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1017945484081114');
+fbq('track', 'PageView');
+</script>
+<noscript>
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1017945484081114&ev=PageView&noscript=1"/>
+</noscript>
+<!-- End Facebook Pixel Code -->
 </head>
 <body>
 
@@ -1186,6 +1224,16 @@ async function loadProducts() {
 ═══════════════════════════════════════════════ */
 function addToCart(id) {
   const p = products.find(x => x.id === id);
+  // Track AddToCart for Facebook Pixel
+  if(p) try {
+    fbq('track', 'AddToCart', {
+      content_ids: [String(p.id)],
+      content_name: p.name,
+      content_type: 'product',
+      value: p.price,
+      currency: 'TND'
+    });
+  } catch(e) {}
   if (!p)       { toast('Produit introuvable', 'err'); return; }
   if (!p.stock) { toast('Ce produit est en rupture de stock', 'err'); return; }
   const ex = cart.find(x => x.id === id);
@@ -1197,6 +1245,16 @@ function addToCart(id) {
   if (btn) { btn.className = 'addbtn added'; btn.innerHTML = '<i class="ti ti-check"></i> Dans le panier'; }
   toast(escHtml(p.name) + ' ajouté au panier', 'ok');
   openCartPanel();
+  // Meta Pixel — track AddToCart
+  if(typeof fbq !== 'undefined') {
+    fbq('track', 'AddToCart', {
+      content_name: p.name,
+      content_ids: [String(p.id)],
+      content_type: 'product',
+      value: p.price,
+      currency: 'TND'
+    });
+  }
 }
 
 function updateCartBadge() {
@@ -1337,6 +1395,10 @@ async function submitOrder() {
     btn.disabled=false; setCheckoutLang(checkoutLang);
     buildSuccessPage(order);
     showPage('pg-success');
+    // Meta Pixel — track Purchase event
+    if(typeof fbq !== 'undefined') {
+      fbq('track', 'Purchase', {value: order.total, currency: 'TND'});
+    }
   } catch(e) {
     btn.disabled=false; setCheckoutLang(checkoutLang);
     toast("Erreur lors de l'envoi. Réessayez.", 'err');
@@ -1368,6 +1430,11 @@ async function submitProductOrder() {
     $('pdOrdBtnTxt').textContent=lb.btnOrder;
     buildSuccessPage(order);
     showPage('pg-success');
+    // Meta Pixel — track Purchase event
+    if(typeof fbq !== 'undefined') {
+      fbq('track', 'Purchase', {value: order.total, currency: 'TND'});
+      fbq('track', 'Lead');
+    }
   } catch(e) {
     btn.disabled=false;
     $('pdOrdBtnTxt').textContent=lb.btnOrder;
@@ -1377,6 +1444,16 @@ async function submitProductOrder() {
 }
 
 function buildSuccessPage(order) {
+  // Track Purchase conversion for Facebook Pixel
+  try {
+    fbq('track', 'Purchase', {
+      value: order.total,
+      currency: 'TND',
+      content_ids: order.items.map(i => String(i.id)),
+      content_type: 'product',
+      num_items: order.items.reduce((s,i)=>s+(i.qty||1),0)
+    });
+  } catch(e) { console.log('Pixel not loaded', e); }
   $('succOrderInfo').innerHTML =
     `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
        <i class="ti ti-receipt" style="color:var(--brand);font-size:18px"></i>
@@ -1412,6 +1489,16 @@ const PD_LABELS = {
 
 function openProductDetail(id) {
   const p=products.find(x=>x.id===id);
+  // Track ViewContent for Facebook Pixel
+  if(p) try {
+    fbq('track', 'ViewContent', {
+      content_ids: [String(p.id)],
+      content_name: p.name,
+      content_type: 'product',
+      value: p.price,
+      currency: 'TND'
+    });
+  } catch(e) {}
   if(!p){toast('Produit introuvable','err');return;}
   currentProductId=id; pdLang='ar';
   $('pdImgBox').innerHTML = p.img_url
@@ -1449,6 +1536,16 @@ function openProductDetail(id) {
   // Set URL hash for sharing
   const _slug = slugify(p.name);
   history.pushState({page:'product',id:id}, '', '#'+_slug);
+  // Meta Pixel — track ViewContent
+  if(typeof fbq !== 'undefined') {
+    fbq('track', 'ViewContent', {
+      content_name: p.name,
+      content_ids: [String(p.id)],
+      content_type: 'product',
+      value: p.price,
+      currency: 'TND'
+    });
+  }
 }
 
 function applyPdLabels(l) {
