@@ -1231,7 +1231,7 @@ function addToCart(id) {
   if (btn) { btn.className = 'addbtn added'; btn.innerHTML = '<i class="ti ti-check"></i> Dans le panier'; }
   toast(escHtml(p.name) + ' ajouté au panier', 'ok');
   openCartPanel();
-  // Meta Pixel — track AddToCart
+  // Meta Pixel + CAPI — track AddToCart
   if(typeof fbq !== 'undefined') {
     fbq('track', 'AddToCart', {
       content_name: p.name,
@@ -1241,6 +1241,13 @@ function addToCart(id) {
       currency: 'TND'
     });
   }
+  sendCAPI('AddToCart', {
+    content_name: p.name,
+    content_ids: [String(p.id)],
+    content_type: 'product',
+    value: p.price,
+    currency: 'TND'
+  });
 }
 
 function updateCartBadge() {
@@ -1381,10 +1388,23 @@ async function submitOrder() {
     btn.disabled=false; setCheckoutLang(checkoutLang);
     buildSuccessPage(order);
     showPage('pg-success');
-    // Meta Pixel — track Purchase event
+    // Meta Pixel + CAPI — track Purchase event
     if(typeof fbq !== 'undefined') {
-      fbq('track', 'Purchase', {value: order.total, currency: 'TND'});
+      fbq('track', 'Purchase', {
+        value: order.total, currency: 'TND',
+        content_ids: order.items.map(i=>String(i.id)),
+        content_type: 'product',
+        order_id: order.id,
+        num_items: order.items.length
+      });
     }
+    sendCAPI('Purchase', {
+      value: order.total, currency: 'TND',
+      content_ids: order.items.map(i=>String(i.id)),
+      content_type: 'product',
+      order_id: order.id,
+      num_items: order.items.length
+    });
   } catch(e) {
     btn.disabled=false; setCheckoutLang(checkoutLang);
     toast("Erreur lors de l'envoi. Réessayez.", 'err');
@@ -1416,11 +1436,24 @@ async function submitProductOrder() {
     $('pdOrdBtnTxt').textContent=lb.btnOrder;
     buildSuccessPage(order);
     showPage('pg-success');
-    // Meta Pixel — track Purchase event
+    // Meta Pixel + CAPI — track Purchase event
     if(typeof fbq !== 'undefined') {
-      fbq('track', 'Purchase', {value: order.total, currency: 'TND'});
+      fbq('track', 'Purchase', {
+        value: order.total, currency: 'TND',
+        content_ids: order.items.map(i=>String(i.id)),
+        content_type: 'product',
+        order_id: order.id,
+        num_items: order.items.length
+      });
       fbq('track', 'Lead');
     }
+    sendCAPI('Purchase', {
+      value: order.total, currency: 'TND',
+      content_ids: order.items.map(i=>String(i.id)),
+      content_type: 'product',
+      order_id: order.id,
+      num_items: order.items.length
+    });
   } catch(e) {
     btn.disabled=false;
     $('pdOrdBtnTxt').textContent=lb.btnOrder;
@@ -1502,7 +1535,7 @@ function openProductDetail(id) {
   // Set URL hash for sharing
   const _slug = slugify(p.name);
   history.pushState({page:'product',id:id}, '', '#'+_slug);
-  // Meta Pixel — track ViewContent
+  // Meta Pixel + CAPI — track ViewContent
   if(typeof fbq !== 'undefined') {
     fbq('track', 'ViewContent', {
       content_name: p.name,
@@ -1512,6 +1545,13 @@ function openProductDetail(id) {
       currency: 'TND'
     });
   }
+  sendCAPI('ViewContent', {
+    content_name: p.name,
+    content_ids: [String(p.id)],
+    content_type: 'product',
+    value: p.price,
+    currency: 'TND'
+  });
 }
 
 function applyPdLabels(l) {
@@ -2154,6 +2194,39 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Enter'&&$('loginModal')&&$('loginModal').classList.contains('open'))doAdminLogin();
 });
 
+
+/* ═══════════════════════════════════════════════
+   CONVERSIONS API (CAPI) — Meta server-side tracking
+═══════════════════════════════════════════════ */
+const CAPI_PIXEL_ID = '2023762831577865';
+const CAPI_TOKEN    = 'EAAST92ZBsFnYBR082ZAWZAeKGAIPweboZAuSvDkwcZCHH8npT0Lk4tAH6kvXVcDfosxOcEPTvO68GZBiFgwJQF2ddUTwImzdzfJX06Pmr407VhzHbn9wW2w6g9sQj4EzQKtnzRAe3rFX2qc4DVuzDPeR8L2KxQaHsaOQ1JSjdQXZBidZBI5ZCahKiSbUokus6CyZCLPgZDZD';
+
+async function sendCAPI(eventName, eventData) {
+  try {
+    const payload = {
+      data: [{
+        event_name:       eventName,
+        event_time:       Math.floor(Date.now() / 1000),
+        event_id:         'evt_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+        event_source_url: window.location.href,
+        action_source:    'website',
+        user_data: {
+          client_user_agent: navigator.userAgent,
+          client_ip_address: ''
+        },
+        custom_data: eventData || {}
+      }]
+    };
+    await fetch(`https://graph.facebook.com/v19.0/${CAPI_PIXEL_ID}/events?access_token=${CAPI_TOKEN}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.log('CAPI error:', e);
+  }
+}
+
 /* ═══════════════════════════════════════════════
    HASH ROUTER — open product directly from URL
 ═══════════════════════════════════════════════ */
@@ -2192,6 +2265,8 @@ window.addEventListener('popstate', e => {
 buildCats();
 updateCartBadge();
 loadProducts().then(() => handleHashRoute());
+// CAPI PageView
+sendCAPI('PageView', {});
 </script>
 </body>
 </html>
